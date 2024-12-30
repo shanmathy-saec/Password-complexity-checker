@@ -1,49 +1,74 @@
-import re
+import string
+import getpass
 
-def check_password_complexity(password):
-    has_uppercase = False
-    has_lowercase = False
-    has_digit = False
-    has_special_char = False
-    
-    if re.search(r'[A-Z]', password):
-        has_uppercase = True
-    
-    if re.search(r'[a-z]', password):
-        has_lowercase = True
-    
-    if re.search(r'\d', password):
-        has_digit = True
-    
-    if re.search(r'[\W_]', password):
-        has_special_char = True
-    
-    strength = "Weak"
-    
-    if len(password) >= 8:
-        if has_uppercase and has_lowercase and has_digit and has_special_char:
-            strength = "Strong"
-        elif (has_uppercase and has_lowercase) or (has_digit and has_special_char):
-            strength = "Medium"
-    
-    return {
-        "has_uppercase": has_uppercase,
-        "has_lowercase": has_lowercase,
-        "has_digit": has_digit,
-        "has_special_char": has_special_char,
-        "strength": strength
-    }
+def check_pwd():
+    password = getpass.getpass("Enter Password: ")
+    strength = 0
+    remarks = ''
+    lower_count = upper_count = num_count = wspace_count = special_count = 0
 
-def main():
-    password = input("Enter your password: ")
-    result = check_password_complexity(password)
-    
-    print(f"\nPassword Analysis:")
-    print(f"Contains uppercase: {result['has_uppercase']}")
-    print(f"Contains lowercase: {result['has_lowercase']}")
-    print(f"Contains digit: {result['has_digit']}")
-    print(f"Contains special character: {result['has_special_char']}")
-    print(f"Password strength: {result['strength']}")
+    for char in list(password):
+        if char in string.ascii_lowercase:
+            lower_count += 1
+        elif char in string.ascii_uppercase:
+            upper_count +=1
+        elif char in string.digits:
+            num_count += 1
+        elif char == ' ':
+            wspace_count +=1
+        else:
+            special_count +=1
 
-if __name__ == "__main__":
-    main()
+    if lower_count >= 1:
+        strength +=1
+    if upper_count >= 1:
+        strength +=1
+    if num_count >= 1:
+        strength +=1
+    if wspace_count>=1:
+        strength +=1
+    if special_count>=1:
+        strength +=1
+
+    if strength == 1:
+        remarks = "Very Bad Password!!! Change ASAP"
+    elif strength == 2:
+        remarks = "Not A Good Password!!! Change ASAP"
+    elif strength ==3:
+        remarks = "It's a weak password, consider changing"
+    elif strength == 4:
+        remarks = "It's a hard password, but can be better"
+    elif strength == 5:
+        remarks = "A very strong password"
+
+    print('Your password has: ')
+    print(f"{lower_count} lowercase characters")
+    print(f"{upper_count} uppercase characters")
+    print(f"{num_count} numeric characters")
+    print(f"{wspace_count} whitespace characters")
+    print(f"{special_count} special characters")
+
+    print(f"Password Strength:{strength}")
+    print(f"Hint: {remarks}")
+
+def ask_pwd(another_pwd=False):
+    valid = False
+    if another_pwd:
+        choice=input('Do you want to enter another pwd (y/n): ')
+    else:
+        choice=input('Do you want to check pwd (y/n): ')
+
+    while not valid:
+        if choice.lower() == 'y':
+            return True
+        elif choice.lower() == 'n':
+            return False
+        else:
+            print('Invalid, Try Again')
+
+if __name__ == '__main__':
+    print('+++ welcome to PWD checker +++')
+    ask_pw = ask_pwd()
+    while check_pwd:
+        check_pwd()
+        ask_pw = ask_pwd(True)
